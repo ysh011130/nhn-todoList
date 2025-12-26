@@ -7,20 +7,33 @@ import java.io.InputStreamReader;
 public class Main {
     public static void main(String[] args) throws IOException{
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-        System.out.println( "=== 입력 테스트 ===");
         
-        String name = "";
+        String sel = "";
         while (true) {
-            System.out.print( "입력 (종료: quit) > ");
-            name = reader.readLine();
+            System.out.println("=== TODO 앱===");
+            System.out.println("1. 등록");
+            System.out.println("2. 조회");
+            System.out.println("0. 종료");
+            System.out.print("선택 > ");
+            sel = reader.readLine();
 
-            if("quit".equals(name)) break;
-            else System.out.println( "입력한 값: " + name);
+            switch (sel) {
+                case "1":
+                    System.out.println("[등록] 메뉴 선택됨");
+                    break;
+                case "2":
+                    System.out.println("[조회] 메뉴 선택됨");
+                    break;
+                case "0":
+                    System.out.println("프로그램을 종료합니다.");
+                    reader.close();
+                    return;
+                default:
+                    System.out.println("잘못된 입력입니다.");
+                    break;
+            }
+
+            System.out.println();
         }
-        
-        System.out.println( "프로그램을 종료합니다.");
-
-        reader.close();
     }
 }
