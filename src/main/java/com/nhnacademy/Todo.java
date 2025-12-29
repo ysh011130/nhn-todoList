@@ -11,6 +11,13 @@ public class Todo {
         this.done = false;
     }
     public Todo(String title, int hours, boolean done) {
+        if (title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be null or empty.");
+        }
+        if (hours <= 0 || hours > 24) {
+         throw new IllegalArgumentException("Hours must be between 1 and 24.");   
+        }
+        
         this.title = title;
         this.hours = hours;
         this.done = done;
@@ -21,12 +28,16 @@ public class Todo {
     public boolean isDone() { return this.done; }
 
     public void setTitle(String title) {
-        if ("".equals(title) != true)
-            this.title = title;
+        if (title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be null or empty.");
+        }
+        this.title = title;
     }
     public void setHours(int hours) {
-        if (hours > 0 && hours <= 24)
-            this.hours = hours;
+        if (hours <= 0 || hours > 24) {
+         throw new IllegalArgumentException("Hours must be between 1 and 24.");   
+        }
+        this.hours = hours;
     }
     public void setDone(boolean done) {
         this. done = done;
