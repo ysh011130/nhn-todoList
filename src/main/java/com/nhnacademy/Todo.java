@@ -39,7 +39,7 @@ public class Todo {
     }
 
     public static void main(String[] args) {
-        Todo todo = new Todo("Java Studey", 3, false);
+        Todo todo = new Todo("Java Study", 3, false);
         System.out.println(todo);
     }
 }
