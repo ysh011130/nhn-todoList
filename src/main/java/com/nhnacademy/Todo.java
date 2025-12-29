@@ -1,5 +1,9 @@
 package com.nhnacademy;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class Todo {
     private String title;
     private int hours;
@@ -49,8 +53,23 @@ public class Todo {
         return status + " " + this.title + " (" + this.hours + "시간)";
     }
 
-    public static void main(String[] args) {
-        Todo todo = new Todo("Java Study", 3, false);
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("Todo 작성");
+        System.out.println("입력 예시 : Java,3,false");
+        System.out.print("> ");
+        String input = reader.readLine();
+        input = input.replaceAll("\\s+", "");
+        String[] tmp = input.split(",");
+
+        Todo todo = new Todo(
+            tmp[0],
+            Integer.parseInt(tmp[1]),
+            Boolean.parseBoolean(tmp[2])
+        );
         System.out.println(todo);
+
+        reader.close();
     }
 }
