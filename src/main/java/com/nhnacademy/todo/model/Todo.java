@@ -54,4 +54,13 @@ public class Todo {
         String status = done ? "[완료]" : "[미완료]";
         return status + " " + this.title + " (" + this.hours + "시간)";
     }
+
+    public String printDetailTest() {
+        return "id: " + id
+           + ", title: " + title
+           + ", category: " + category
+           + ", priority: " + priority
+           + ", hours: " + hours
+           + ", done: " + done;
+    }
 }

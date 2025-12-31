@@ -28,7 +28,7 @@ public enum Category {
     }
     public static Category readCategory(BufferedReader reader) throws IOException {
         while (true) {
-            System.out.println("구분 선택:");
+            System.out.println("\n구분 선택:");
             Category[] categories = Category.values();
             for (int i = 0; i < categories.length; i++) {
                 System.out.printf("%d: %s%n", i + 1, categories[i].getDisplayName());

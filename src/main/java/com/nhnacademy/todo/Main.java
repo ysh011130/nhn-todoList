@@ -13,6 +13,7 @@ public class Main {
     public static void printMenu() {
         System.out.println("=== TODO 앱===");
         System.out.println("1. 등록  2. 조회  0. 종료");
+        System.out.println("99. 테스트용"); // 테스트용 전체 출력
         System.out.print("선택 > ");
     }
 
@@ -25,8 +26,7 @@ public class Main {
             String choice = reader.readLine();
 
             switch (choice) {
-                case "1":
-                    // "[등록] 메뉴 선택됨"
+                case "1":   // "[등록] 메뉴 선택됨"
                     System.out.print("할 일: ");
                     String title = reader.readLine();
                     System.out.print("시간: ");
@@ -41,14 +41,17 @@ public class Main {
                     }
                     
                     break;
-                case "2":
-                    // "[조회] 메뉴 선택됨"
+                case "2":   // "[조회] 메뉴 선택됨"
                     service.printAll();
                     break;
                 case "0":
                     System.out.println("프로그램을 종료합니다.");
                     reader.close();
                     return;
+                case "99":  // 테스트용 전체 출력
+                    System.out.println("\n테스트용 전체 출력");
+                    service.printAllTest();
+                    break;
                 default:
                     System.out.println("잘못된 입력입니다.");
                     break;

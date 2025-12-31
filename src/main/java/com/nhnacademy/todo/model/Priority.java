@@ -29,7 +29,7 @@ public enum Priority {
     }
     public static Priority readPriority(BufferedReader reader) throws IOException {
         while (true) {
-            System.out.print("중요도 (1:낮음 / 2:보통 / 3:높음) > ");
+            System.out.print("\n중요도 (1:낮음 / 2:보통 / 3:높음) > ");
 
             try {
                 int level = Integer.parseInt(reader.readLine());
