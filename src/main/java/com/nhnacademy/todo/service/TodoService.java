@@ -23,7 +23,7 @@ public class TodoService {
         return todoList;
     }
 
-    public void printAll() {
+    public void printAll() {    // 전체 출력
         if (todoList.isEmpty()) {
             System.out.println("등록된 TODO가 없습니다.");
             return;

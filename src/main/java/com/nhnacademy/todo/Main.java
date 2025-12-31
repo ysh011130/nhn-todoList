@@ -30,9 +30,13 @@ public class Main {
                     System.out.print("시간: ");
                     int hours = Integer.parseInt(reader.readLine());
 
-                    Todo todo = new Todo(title, hours, false);
-                    service.add(todo);
-
+                    try {
+                        service.add(new Todo(title, hours, false));
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                        System.out.println(e.getMessage());
+                    }
+                    
                     break;
                 case "2":
                     // "[조회] 메뉴 선택됨"
