@@ -1,9 +1,11 @@
-package com.nhnacademy;
+package com.nhnacademy.todo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import com.nhnacademy.todo.model.Todo;
 
 public class Main {
     public static void main(String[] args) throws IOException{
