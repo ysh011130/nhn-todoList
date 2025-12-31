@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.nhnacademy.todo.model.Category;
+import com.nhnacademy.todo.model.Priority;
 import com.nhnacademy.todo.model.Todo;
 import com.nhnacademy.todo.service.TodoService;
 
@@ -29,11 +31,12 @@ public class Main {
                     String title = reader.readLine();
                     System.out.print("시간: ");
                     int hours = Integer.parseInt(reader.readLine());
+                    Category category = Category.readCategory(reader);
+                    Priority priority = Priority.readPriority(reader);
 
                     try {
-                        service.add(new Todo(title, hours, false));
+                        service.add(new Todo(title, category, priority, hours, false));
                     } catch (Exception e) {
-                        // TODO: handle exception
                         System.out.println(e.getMessage());
                     }
                     

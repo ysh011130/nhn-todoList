@@ -1,16 +1,16 @@
 package com.nhnacademy.todo.model;
 
 public class Todo {
+    private static int idCounter = 1;
+
+    private int id;
     private String title;
+    private Category category;
+    private Priority priority;
     private int hours;
     private boolean done;
 
-    public Todo() {
-        this.title = "제목 없음";
-        this.hours = 0;
-        this.done = false;
-    }
-    public Todo(String title, int hours, boolean done) {
+    public Todo(String title, Category category, Priority priority, int hours, boolean done) {
         if (title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Title cannot be null or empty.");
         }
@@ -18,12 +18,18 @@ public class Todo {
             throw new IllegalArgumentException("Hours must be between 1 and 24.");   
         }
         
+        this.id = idCounter++;
         this.title = title;
+        this.category = category;
+        this.priority = priority;
         this.hours = hours;
         this.done = done;
     }
 
+    public int getId() { return this.id; }
     public String getTitle() { return this.title; }
+    public Category getCategory() { return this.category; }
+    public Priority gePriority() {return this.priority; }
     public int getHours() { return this.hours; }
     public boolean isDone() { return this.done; }
 
