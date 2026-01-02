@@ -29,7 +29,7 @@ public class Todo {
     public int getId() { return this.id; }
     public String getTitle() { return this.title; }
     public Category getCategory() { return this.category; }
-    public Priority gePriority() {return this.priority; }
+    public Priority getPriority() { return this.priority; }
     public int getHours() { return this.hours; }
     public boolean isDone() { return this.done; }
 
