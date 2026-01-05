@@ -29,15 +29,15 @@ public enum Priority {
     }
     public static Priority readPriority(BufferedReader reader) throws IOException {
         while (true) {
-            System.out.print("중요도 (1:낮음 / 2:보통 / 3:높음) > ");
-
+            System.out.print("중요도 (1:LOW, 2:MEDIUM, 3:HIGH) > ");
+            
             try {
-                int level = Integer.parseInt(reader.readLine());
-                return Priority.fromLevel(level);
+                int idx = Integer.parseInt(reader.readLine().trim());
+                return Priority.fromLevel(idx);
             } catch (NumberFormatException e) {
-                System.out.println("[오류] 숫자를 입력해주세요.");
+                System.err.println("숫자를 입력하시오.");
             } catch (IllegalArgumentException e) {
-                System.out.println("[오류] 중요도는 1~3 사이의 숫자를 입력해주세요.");
+                System.err.println(e.getMessage());
             }
         }
     }

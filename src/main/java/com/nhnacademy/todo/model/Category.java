@@ -28,20 +28,15 @@ public enum Category {
     }
     public static Category readCategory(BufferedReader reader) throws IOException {
         while (true) {
-            System.out.println("구분 선택:");
-            Category[] categories = Category.values();
-            for (int i = 0; i < categories.length; i++) {
-                System.out.printf("%d: %s%n", i + 1, categories[i].getDisplayName());
-            }
-            System.out.print("선택 > ");
+            System.out.print("구분 (1:WORK, 2:STUDY, 3:PERSONAL, 4:HEALTH, 5:OTHER) > ");
 
             try {
-                int num = Integer.parseInt(reader.readLine());
-                return Category.fromNumber(num);
+                int idx = Integer.parseInt(reader.readLine());
+                return Category.fromNumber(idx);
             } catch (NumberFormatException e) {
-                System.out.println("[오류] 숫자를 입력해주세요.");
+                System.err.println("숫자를 입력하시오.");
             } catch (IllegalArgumentException e) {
-                System.out.println("[오류] " + e.getMessage());
+                System.err.println(e.getMessage());
             }
         }
     }

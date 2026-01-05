@@ -1,6 +1,10 @@
 package com.nhnacademy.todo.service;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -48,7 +52,7 @@ public class TodoService {
         System.out.print("\n삭제할 TODO ID > ");
         int index = 0;
         try {
-            index = Integer.parseInt(reader.readLine());
+            index = Integer.parseInt(reader.readLine().trim());
         } catch (NumberFormatException e) {
             System.err.println("숫자를 입력하시오.");
             return;
@@ -79,18 +83,18 @@ public class TodoService {
         }
 
         System.out.print("수정할 TODO ID > ");
-        int id = Integer.parseInt(reader.readLine());
+        int id = Integer.parseInt(reader.readLine().trim());
         try {
             Todo toUpdate = findByID(id);
 
             System.out.print("새 제목 > ");
-            String title = reader.readLine();
+            String title = reader.readLine().trim();
             if (isExist(title)) {
                 throw new IllegalArgumentException("동일한 제목의 일정이 이미 존재합니다.");
             }
 
             System.out.print("새 예상 시간 > ");
-            int hours = Integer.parseInt(reader.readLine());
+            int hours = Integer.parseInt(reader.readLine().trim());
 
             toUpdate.setTitle(title);
             toUpdate.setHours(hours);
@@ -106,12 +110,13 @@ public class TodoService {
         System.out.println("\n=== TODO 목록 ===");
         for (int i = 0; i < sorted.size(); i++) {
             Todo todo = sorted.get(i);
-            System.out.println("[" + todo.getId() + "] "
-                + todo.getTitle() + " | "
-                + todo.getHours() + "시간 | "
-                + todo.getCategory() + " | "
-                + todo.getPriority() + " | "
-                + "[" + (todo.isDone() ? "O" : "X") + "]");
+            // System.out.println("[" + todo.getId() + "] "
+            //     + todo.getTitle() + " | "
+            //     + todo.getHours() + "시간 | "
+            //     + todo.getCategory() + " | "
+            //     + todo.getPriority() + " | "
+            //     + "[" + (todo.isDone() ? "O" : "X") + "]");
+            System.out.println(todo);
         }
     }
     public void printByCategory() {
@@ -149,7 +154,7 @@ public class TodoService {
             System.out.println("3. 중요도별 조회");
             System.out.println("0. 이전");
             System.out.print("선택 > ");
-            String choice = reader.readLine();
+            String choice = reader.readLine().trim();
             
             switch (choice) {
                 case "1":
@@ -170,39 +175,11 @@ public class TodoService {
         }
     }
 
-    public Category readCategory() throws IOException {
-        while (true) {
-            System.out.print("구분 (1:WORK, 2:STUDY, 3:PERSONAL, 4:HEALTH, 5:OTHER) > ");
-
-            try {
-                int idx = Integer.parseInt(reader.readLine());
-                return Category.fromNumber(idx);
-            } catch (NumberFormatException e) {
-                System.err.println("숫자를 입력하시오.");
-            } catch (IllegalArgumentException e) {
-                System.err.println(e.getMessage());
-            }
-        }
-    }
-    public Priority readPriority() throws IOException {
-        while (true) {
-            System.out.print("중요도 (1:LOW, 2:MEDIUM, 3:HIGH) > ");
-            
-            try {
-                int idx = Integer.parseInt(reader.readLine());
-                return Priority.fromLevel(idx);
-            } catch (NumberFormatException e) {
-                System.err.println("숫자를 입력하시오.");
-            } catch (IllegalArgumentException e) {
-                System.err.println(e.getMessage());
-            }
-        }
-    }
     public Todo newTodo() throws IOException {
         System.out.println("\n=== TODO 등록 ===");
 
         System.out.print("제목 > ");
-        String title = reader.readLine();
+        String title = reader.readLine().trim();
         if ("".equals(title)) {
             throw new IllegalArgumentException("Title cannot be null");
         } else if (isExist(title)) {
@@ -212,14 +189,61 @@ public class TodoService {
         int hours = 0;
         try {
             System.out.print("예상 시간 > ");
-            hours = Integer.parseInt(reader.readLine());            
+            hours = Integer.parseInt(reader.readLine().trim());            
         } catch (NumberFormatException e) {
             System.err.println("숫자를 입력하시오.");
         }
 
-        Category category = readCategory();
-        Priority priority = readPriority();
+        Category category = Category.readCategory(reader);
+        Priority priority = Priority.readPriority(reader);
 
         return new Todo(title, category, priority, hours, false);
+    }
+
+    public void loadFromFile(String filename) {
+        File file = new File(filename);
+        if (!file.exists()) {
+            System.out.println("파일이 없습니다. 빈 리스트로 시작합니다.");
+            return;
+        }
+
+        try (BufferedReader read = new BufferedReader(new FileReader(filename))) {
+            String line;
+            int count = 0;
+            while ((line = read.readLine()) != null) {
+                String[] parts = line.split(",");
+                int id = Integer.parseInt(parts[0]);
+                String title = parts[1];
+                Category category = Category.valueOf(parts[2]);
+                Priority priority = Priority.valueOf(parts[3]);
+                int hours = Integer.parseInt(parts[4]);
+                boolean done = Boolean.parseBoolean(parts[5]);
+                String createAt = parts[6];
+                todoList.add(new Todo(id, title, category, priority, hours, done, createAt));
+
+                count++;
+            }
+            System.out.println("파일 로드 완료: " + filename + " ("+ count + "건)");
+        } catch (Exception e) {
+            System.err.println("파일 로드 실패: " + e.getMessage());
+        }
+    }
+    public void saveToFile(String filename) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for (Todo todo : todoList) {
+                String line = todo.getId() + ","
+                            + todo.getTitle() + ","
+                            + todo.getCategory() + ","
+                            + todo.getPriority() + ","
+                            + todo.getHours() + ","
+                            + todo.isDone() + ","
+                            + todo.createdAt();
+                writer.write(line);
+                writer.newLine();
+            }
+            System.out.println("파일 저장 완료: " + filename + " (" + todoList.size() + "건)");
+        } catch (Exception e) {
+            System.err.println("파일 저장 실패: " + e.getMessage());
+        }
     }
 }

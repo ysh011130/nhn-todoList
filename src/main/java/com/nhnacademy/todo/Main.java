@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import com.nhnacademy.todo.service.TodoService;
 
 public class Main {
+    private static final String FILENAME = "todos.csv";
+
     public static void main(String[] args) {
         final String menu = "=== TODO 앱 ===\n"
                     + "1. 등록\n"
@@ -18,6 +20,9 @@ public class Main {
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             TodoService service = new TodoService(reader);
+            
+            service.loadFromFile(FILENAME);
+
             while (true) {
                 System.out.print(menu);
                 String choice = reader.readLine().trim();
@@ -48,6 +53,7 @@ public class Main {
                         }
                         break;
                     case "0":   // 종료
+                        service.saveToFile(FILENAME);
                         System.out.println("프로그램을 종료합니다.");
                         return;
                     default:

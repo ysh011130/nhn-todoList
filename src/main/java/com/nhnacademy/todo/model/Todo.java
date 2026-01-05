@@ -1,5 +1,8 @@
 package com.nhnacademy.todo.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Todo {
     private static int idCounter = 1;
 
@@ -9,6 +12,7 @@ public class Todo {
     private Priority priority;
     private int hours;
     private boolean done;
+    private String createAt;
 
     public Todo(String title, Category category, Priority priority, int hours, boolean done) {
         if (title == null || title.isEmpty()) {
@@ -24,6 +28,21 @@ public class Todo {
         this.priority = priority;
         this.hours = hours;
         this.done = done;
+        this.createAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+    /** 파일 로드용 */
+    public Todo(int id, String title, Category category, Priority priority, int hours, boolean done, String createdAt) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.priority = priority;
+        this.hours = hours;
+        this.done = done;
+        this.createAt = createdAt;
+
+        if (id >= idCounter) {
+            idCounter = id + 1;
+        }
     }
 
     public int getId() { return this.id; }
@@ -32,6 +51,7 @@ public class Todo {
     public Priority getPriority() { return this.priority; }
     public int getHours() { return this.hours; }
     public boolean isDone() { return this.done; }
+    public String createdAt() { return this.createAt; }
 
     public void setTitle(String title) {
         if (title == null || title.isEmpty()) {
@@ -51,7 +71,17 @@ public class Todo {
 
     @Override
     public String toString() {
-        String status = done ? "[완료]" : "[미완료]";
-        return status + " " + this.title + " (" + this.hours + "시간)";
+        // String status = done ? "[완료]" : "[미완료]";
+        // return status + " " + this.title + " (" + this.hours + "시간)";
+        String result = String.format("[ %s ] %3d | %-18s | %8s | %6s | %4dh | %s |",
+            isDone() ? "O" : "X",
+            getId(),
+            getTitle(),
+            getCategory(),
+            getPriority(),
+            getHours(),
+            createdAt()
+        );
+        return result;
     }
 }
