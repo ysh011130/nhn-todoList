@@ -63,16 +63,25 @@ public class Todo {
         }
         this.title = title;
     }
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
     public void setHours(int hours) {
         if (hours <= 0 || hours > 24) {
             throw new IllegalArgumentException("Hours must be between 1 and 24.");   
         }
         this.hours = hours;
     }
-    public void setDone(boolean done) {
-        this. done = done;
-    }
-
+    
     @Override
     public String toString() {
         String result = String.format("[ %s ] %3d | %-18s | %8s | %6s | %4dh | 마감: %s |",

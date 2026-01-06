@@ -16,12 +16,8 @@ import com.nhnacademy.todo.model.Priority;
 import com.nhnacademy.todo.model.Todo;
 
 public class TodoService {
-    private ArrayList<Todo> todoList;
+    private List<Todo> todoList = new ArrayList<>();
     private static final String FILENAME = "todos.csv";
-
-    public TodoService() {
-        todoList = new ArrayList<>();
-    }
 
     public void add(Todo todo) {    // 삽입
         todoList.add(todo);
@@ -38,8 +34,8 @@ public class TodoService {
     /** <p>아무것도 선택되지 않아 바로 printBy(null)로 호출</p>
      *  <p>또는 getByCategory(Category category) or getByPriority(Priority priority)를 매개변수로 호출</p>
      * */
-    public void printBy(ArrayList<Todo> selected) { // 전체 출력
-        ArrayList<Todo> choice;
+    public void printBy(List<Todo> selected) { // 전체 출력
+        List<Todo> choice;
         if (selected == null) {
             choice = todoList;
         } else {
@@ -47,14 +43,14 @@ public class TodoService {
         }
 
         if (choice.isEmpty()) {
-            System.out.println("등록된 TODO가 없습니다.");
+            System.out.println("등록되거나 해당하는 TODO가 없습니다.");
             return;
         }
         for (Todo todo : choice) {
             System.out.println(todo);
         }
     }
-    public ArrayList<Todo> filterByCategory(Category category) {
+    public List<Todo> filterByCategory(Category category) {
         ArrayList<Todo> retArr = new ArrayList<>();
         
         for (Todo todo : todoList) {
@@ -64,7 +60,7 @@ public class TodoService {
         }
         return retArr;
     }
-    public ArrayList<Todo> filterByPriority(Priority priority) {
+    public List<Todo> filterByPriority(Priority priority) {
         ArrayList<Todo> retArr = new ArrayList<>();
         
         for (Todo todo : todoList) {
@@ -73,6 +69,38 @@ public class TodoService {
             }
         }
         return retArr;
+    }
+    public List<Todo> filterByDueDate(LocalDate from, LocalDate to) {
+        List<Todo> retArr = new ArrayList<>();
+
+        for (Todo todo : todoList) {
+            LocalDate dueDate = todo.getDueDate();
+
+            if (!dueDate.isBefore(from) && !dueDate.isAfter(to)) {
+                retArr.add(todo);
+            }
+        }
+
+        return retArr;
+    }
+    public List<Todo> filterByDone(boolean done) {
+        ArrayList<Todo> retArr = new ArrayList<>();
+        
+        for (Todo todo : todoList) {
+            if (done == todo.isDone()) {
+                retArr.add(todo);
+            }
+        }
+        return retArr;
+    }
+
+    public void update(int id, String title, Category category, Priority priority, LocalDate dueDate, int hours) {
+        Todo todo = findById(id);
+        todo.setTitle(title);
+        todo.setCategory(category);
+        todo.setPriority(priority);
+        todo.setDueDate(dueDate);
+        todo.setHours(hours);
     }
 
     public Todo findById(int id) {
@@ -103,8 +131,8 @@ public class TodoService {
         return todoList.isEmpty();
     }
 
-    public List<Todo> searchByTitle(String keyword) {
-        List<Todo> result = new ArrayList<>();
+    public ArrayList<Todo> searchByTitle(String keyword) {
+        ArrayList<Todo> result = new ArrayList<>();
 
         String lowerKeyword = keyword.toLowerCase();
         for (Todo todo : todoList) {
