@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.nhnacademy.todo.exception.TodoNotFoundException;
@@ -15,59 +14,16 @@ import com.nhnacademy.todo.model.Todo;
 
 public class TodoService {
     private ArrayList<Todo> todoList;
-    private BufferedReader reader;
+    private static final String FILENAME = "todos.csv";
 
-    public TodoService(BufferedReader reader) {
-        this.todoList = new ArrayList<>();
-        this.reader = reader;
+    public TodoService() {
+        todoList = new ArrayList<>();
     }
 
-    public void insert(Todo todo) {    // 삽입
+    public void add(Todo todo) {    // 삽입
         todoList.add(todo);
         System.out.println("등록 완료!");
     }
-
-    public Todo findByID(int id) {
-        for (Todo todo : todoList) {
-            if (todo.getId() == id) {
-                return todo;
-            }
-        }
-        throw new TodoNotFoundException(id);
-    }
-    public int idxFindById(int id) {
-        for (int i = 0; i < todoList.size(); i++) {
-            if(todoList.get(i).getId() == id) {
-                return i;
-            }
-        }
-        throw new TodoNotFoundException(id);
-    }
-    public void delete() throws IOException { // 삭제
-        if (todoList.isEmpty()) {
-            System.out.println("등록된 TODO가 없습니다.");
-            return;
-        }
-
-        System.out.print("\n삭제할 TODO ID > ");
-        int index = 0;
-        try {
-            index = Integer.parseInt(reader.readLine().trim());
-        } catch (NumberFormatException e) {
-            System.err.println("숫자를 입력하시오.");
-            return;
-        }
-        
-        try {
-            todoList.remove(idxFindById(index));
-            System.out.println("삭제 완료!");
-        } catch (IndexOutOfBoundsException e) {
-            System.err.println("다음 ID는 존재하지 않습니다 : ID = " + index);
-        } catch (TodoNotFoundException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-    
     public boolean isExist(String title) {
         for (Todo todo : todoList) {
             if (todo.getTitle().equals(title)) {
@@ -76,138 +32,82 @@ public class TodoService {
         }
         return false;
     }
-    public void updateTodo() throws IOException {
-        if (todoList.isEmpty()) {
+    /** <p>아무것도 선택되지 않아 바로 printBy(null)로 호출</p>
+     *  <p>또는 getByCategory(Category category) or getByPriority(Priority priority)를 매개변수로 호출</p>
+     * */
+    public void printBy(ArrayList<Todo> selected) { // 전체 출력
+        ArrayList<Todo> choice;
+        if (selected == null) {
+            choice = todoList;
+        } else {
+            choice = selected;
+        }
+
+        if (choice.isEmpty()) {
             System.out.println("등록된 TODO가 없습니다.");
             return;
         }
-
-        System.out.print("수정할 TODO ID > ");
-        int id = Integer.parseInt(reader.readLine().trim());
-        try {
-            Todo toUpdate = findByID(id);
-
-            System.out.print("새 제목 > ");
-            String title = reader.readLine().trim();
-            if (isExist(title)) {
-                throw new IllegalArgumentException("동일한 제목의 일정이 이미 존재합니다.");
-            }
-
-            System.out.print("새 예상 시간 > ");
-            int hours = Integer.parseInt(reader.readLine().trim());
-
-            toUpdate.setTitle(title);
-            toUpdate.setHours(hours);
-        } catch (TodoNotFoundException e) {
-            System.err.println(e.getMessage());
-        } catch (NumberFormatException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
-    public void printBy(ArrayList<Todo> todoList) {
-        ArrayList<Todo> sorted = todoList;
-        System.out.println("\n=== TODO 목록 ===");
-        for (int i = 0; i < sorted.size(); i++) {
-            Todo todo = sorted.get(i);
-            // System.out.println("[" + todo.getId() + "] "
-            //     + todo.getTitle() + " | "
-            //     + todo.getHours() + "시간 | "
-            //     + todo.getCategory() + " | "
-            //     + todo.getPriority() + " | "
-            //     + "[" + (todo.isDone() ? "O" : "X") + "]");
+        for (Todo todo : choice) {
             System.out.println(todo);
         }
     }
-    public void printByCategory() {
-        ArrayList<Todo> byCategory = new ArrayList<>();
-        for (Category category : Category.values()) {
-            for (Todo todo : todoList) {
-                if (category == todo.getCategory()) {
-                    byCategory.add(todo);
-                }
+    public ArrayList<Todo> getByCategory(Category category) {
+        ArrayList<Todo> retArr = new ArrayList<>();
+        
+        for (Todo todo : todoList) {
+            if (category == todo.getCategory()) {
+                retArr.add(todo);
             }
         }
-        printBy(byCategory);
+        return retArr;
     }
-    public void printByPriority() {
-        ArrayList<Todo> byPriority = new ArrayList<>();
-        for (Priority priority : Priority.values()) {
-            for (Todo todo : todoList) {
-                if (priority == todo.getPriority()) {
-                    byPriority.add(todo);
-                }
+    public ArrayList<Todo> getByPriority(Priority priority) {
+        ArrayList<Todo> retArr = new ArrayList<>();
+        
+        for (Todo todo : todoList) {
+            if (priority == todo.getPriority()) {
+                retArr.add(todo);
             }
         }
-        printBy(byPriority);
+        return retArr;
     }
-    public void printAll() throws IOException {
+
+    public Todo findById(int id) {
+        for (Todo todo : todoList) {
+            if (todo.getId() == id) {
+                return todo;
+            }
+        }
+        throw new TodoNotFoundException(id);
+    }
+    public void remove(int id) {    // 삭제
         if (todoList.isEmpty()) {
             System.out.println("등록된 TODO가 없습니다.");
             return;
         }
-
-        while (true) {
-            System.out.println("\n=== 조회 메뉴 ===");
-            System.out.println("1. 전체 조회");
-            System.out.println("2. 구분별 조회");
-            System.out.println("3. 중요도별 조회");
-            System.out.println("0. 이전");
-            System.out.print("선택 > ");
-            String choice = reader.readLine().trim();
-            
-            switch (choice) {
-                case "1":
-                    printBy(todoList);
-                    break;
-                case "2":
-                    printByCategory();
-                    break;
-                case "3":
-                    printByPriority();
-                    break;
-                case "0":
-                    return;
-                default:
-                    System.out.println("잘못된 입력입니다.");
-                    break;
-            }
-        }
-    }
-
-    public Todo newTodo() throws IOException {
-        System.out.println("\n=== TODO 등록 ===");
-
-        System.out.print("제목 > ");
-        String title = reader.readLine().trim();
-        if ("".equals(title)) {
-            throw new IllegalArgumentException("Title cannot be null");
-        } else if (isExist(title)) {
-            throw new IllegalArgumentException("동일한 제목의 일정이 이미 존재합니다.");
-        }
-
-        int hours = 0;
+        
         try {
-            System.out.print("예상 시간 > ");
-            hours = Integer.parseInt(reader.readLine().trim());            
-        } catch (NumberFormatException e) {
-            System.err.println("숫자를 입력하시오.");
+            todoList.remove(findById(id));
+            System.out.println("삭제 완료!");
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("다음 ID는 존재하지 않습니다 : ID = " + id);
+        } catch (TodoNotFoundException e) {
+            System.err.println(e.getMessage());
         }
-
-        Category category = Category.readCategory(reader);
-        Priority priority = Priority.readPriority(reader);
-
-        return new Todo(title, category, priority, hours, false);
     }
 
-    public void loadFromFile(String filename) {
-        File file = new File(filename);
+    public boolean isEmpty() {
+        return todoList.isEmpty();
+    }
+
+    public void loadFromFile() {    // 파일 로드
+        File file = new File(FILENAME);
         if (!file.exists()) {
             System.out.println("파일이 없습니다. 빈 리스트로 시작합니다.");
             return;
         }
 
-        try (BufferedReader read = new BufferedReader(new FileReader(filename))) {
+        try (BufferedReader read = new BufferedReader(new FileReader(FILENAME))) {
             String line;
             int count = 0;
             while ((line = read.readLine()) != null) {
@@ -223,13 +123,13 @@ public class TodoService {
 
                 count++;
             }
-            System.out.println("파일 로드 완료: " + filename + " ("+ count + "건)");
+            System.out.println("파일 로드 완료: " + FILENAME + " ("+ count + "건)");
         } catch (Exception e) {
             System.err.println("파일 로드 실패: " + e.getMessage());
         }
     }
-    public void saveToFile(String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+    public void saveToFile() {  // 파일 저장
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILENAME))) {
             for (Todo todo : todoList) {
                 String line = todo.getId() + ","
                             + todo.getTitle() + ","
@@ -241,7 +141,7 @@ public class TodoService {
                 writer.write(line);
                 writer.newLine();
             }
-            System.out.println("파일 저장 완료: " + filename + " (" + todoList.size() + "건)");
+            System.out.println("파일 저장 완료: " + FILENAME + " (" + todoList.size() + "건)");
         } catch (Exception e) {
             System.err.println("파일 저장 실패: " + e.getMessage());
         }
