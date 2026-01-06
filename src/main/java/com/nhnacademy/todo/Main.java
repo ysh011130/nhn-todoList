@@ -3,6 +3,8 @@ package com.nhnacademy.todo;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import com.nhnacademy.todo.model.Category;
 import com.nhnacademy.todo.model.Priority;
@@ -30,6 +32,12 @@ public class Main {
         } else if (service.isExist(title)) {
             throw new IllegalArgumentException("동일한 제목의 일정이 이미 존재합니다.");
         }
+        
+        Category category = Category.readCategory(reader);
+        Priority priority = Priority.readPriority(reader);
+        
+        System.out.print("마감일 (yyyy-MM-dd, 없으면 Enter): ");
+        LocalDate dueDate = readDate(reader);
 
         int hours = 0;
         try {
@@ -39,11 +47,17 @@ public class Main {
             System.err.println("숫자를 입력하시오.");
         }
 
-        Category category = Category.readCategory(reader);
-
-        Priority priority = Priority.readPriority(reader);
-
-        service.add(new Todo(title, category, priority, hours, false));
+        service.add(new Todo(title, category, priority, dueDate, hours, false));
+    }
+    private static LocalDate readDate(BufferedReader reader) throws IOException {
+        try {
+            String input = reader.readLine();
+            if (input.isBlank()) return null;
+            return LocalDate.parse(input);
+        } catch (DateTimeParseException e) {
+            System.out.println("날짜 형식이 올바르지 않습니다.");
+            return null;
+        }
     }
 
     private static void printAll(BufferedReader reader) throws IOException {    // 전체 출력
@@ -84,14 +98,14 @@ public class Main {
         System.out.print("> ");
         Category category = Category.fromNumber(Integer.parseInt(reader.readLine().trim()));
         
-        service.printBy(service.getByCategory(category));
+        service.printBy(service.filterByCategory(category));
     }
     private static void selectPriority(BufferedReader reader) throws IOException {
         System.out.println("\n중요도 (1:LOW, 2:MEDIUM, 3:HIGH)");
         System.out.print("> ");
         Priority priority = Priority.fromLevel(Integer.parseInt(reader.readLine().trim()));
         
-        service.printBy(service.getByPriority(priority));
+        service.printBy(service.filterByPriority(priority));
     }
 
     private static void updateTodo(BufferedReader reader) {  // 수정

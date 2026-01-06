@@ -5,7 +5,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.nhnacademy.todo.exception.TodoNotFoundException;
 import com.nhnacademy.todo.model.Category;
@@ -51,7 +54,7 @@ public class TodoService {
             System.out.println(todo);
         }
     }
-    public ArrayList<Todo> getByCategory(Category category) {
+    public ArrayList<Todo> filterByCategory(Category category) {
         ArrayList<Todo> retArr = new ArrayList<>();
         
         for (Todo todo : todoList) {
@@ -61,7 +64,7 @@ public class TodoService {
         }
         return retArr;
     }
-    public ArrayList<Todo> getByPriority(Priority priority) {
+    public ArrayList<Todo> filterByPriority(Priority priority) {
         ArrayList<Todo> retArr = new ArrayList<>();
         
         for (Todo todo : todoList) {
@@ -100,6 +103,18 @@ public class TodoService {
         return todoList.isEmpty();
     }
 
+    public List<Todo> searchByTitle(String keyword) {
+        List<Todo> result = new ArrayList<>();
+
+        String lowerKeyword = keyword.toLowerCase();
+        for (Todo todo : todoList) {
+            if (todo.getTitle().toLowerCase().contains(lowerKeyword)) {
+                result.add(todo);
+            }
+        }
+        return result;
+    }
+
     public void loadFromFile() {    // 파일 로드
         File file = new File(FILENAME);
         if (!file.exists()) {
@@ -116,10 +131,11 @@ public class TodoService {
                 String title = parts[1];
                 Category category = Category.valueOf(parts[2]);
                 Priority priority = Priority.valueOf(parts[3]);
-                int hours = Integer.parseInt(parts[4]);
-                boolean done = Boolean.parseBoolean(parts[5]);
-                String createAt = parts[6];
-                todoList.add(new Todo(id, title, category, priority, hours, done, createAt));
+                LocalDate dueDate = parts[4].isEmpty() ? null : LocalDate.parse(parts[4]);
+                int hours = Integer.parseInt(parts[5]);
+                boolean done = Boolean.parseBoolean(parts[6]);
+                LocalDateTime createAt = LocalDateTime.parse(parts[7]);
+                todoList.add(new Todo(id, title, category, priority, dueDate, hours, done, createAt));
 
                 count++;
             }
@@ -135,9 +151,10 @@ public class TodoService {
                             + todo.getTitle() + ","
                             + todo.getCategory() + ","
                             + todo.getPriority() + ","
+                            + ((todo.getDueDate() == null) ? "" : todo.getDueDate().toString()) + ","
                             + todo.getHours() + ","
                             + todo.isDone() + ","
-                            + todo.createdAt();
+                            + todo.createdAt().toString();
                 writer.write(line);
                 writer.newLine();
             }
